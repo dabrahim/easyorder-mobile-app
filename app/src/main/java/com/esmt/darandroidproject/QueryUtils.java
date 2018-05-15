@@ -21,7 +21,9 @@ public class QueryUtils {
 
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
-    private static final String CLIENT_REGISTRATION_URL = "http://192.168.2.76/easyorder/client/add";
+    private static final String CLIENT_REGISTRATION_URL = "http://192.168.43.246/easyorder/client/add";
+    private static final String USER_LOGIN_URL = "http://192.168.43.246/easyorder/rest/connexion";
+//    private static final String CLIENT_REGISTRATION_URL = "http://192.168.2.76/easyorder/client/add";
 
     private QueryUtils (){
     }
@@ -52,6 +54,12 @@ public class QueryUtils {
         return jsonResponse;
     }
 
+    public static String connectUser (Map<String, String> params){
+        URL url = createUrl( USER_LOGIN_URL );
+        String jsonResponse = makeHttpRequest(url, "POST", params);
+        return jsonResponse;
+    }
+
     /**
      *
      * @param url
@@ -59,7 +67,7 @@ public class QueryUtils {
      * @param params
      * @return
      */
-    public static String makeHttpRequest(URL url, String verb, HashMap<String, String> params) {
+    public static String makeHttpRequest(URL url, String verb, Map<String, String> params) {
         String jsonResponse = "";
 
         if (url == null){
@@ -104,7 +112,7 @@ public class QueryUtils {
             Log.e(LOG_TAG, "Error making HTTP request", e);
         }
 
-        return  jsonResponse;
+        return jsonResponse;
     }
 
     /**

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DarAndroidProject</string>
+    <string name="jwt">com.esmt.darandroidproject.LOGIN_JWT</string>
+    <string name="shared_preferences_name">com.esmt.darandroidproject.SHARED_PREFERENCES</string>
 </resources>
