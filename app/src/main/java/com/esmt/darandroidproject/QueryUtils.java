@@ -2,6 +2,11 @@ package com.esmt.darandroidproject;
 
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,16 +18,21 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class QueryUtils {
 
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    public static final String  IP_ADDRESS =  "192.168.43.246";
 
-    private static final String CLIENT_REGISTRATION_URL = "http://192.168.43.246/easyorder/client/add";
-    private static final String USER_LOGIN_URL = "http://192.168.43.246/easyorder/rest/connexion";
+    private static final String CLIENT_REGISTRATION_URL = "http://"+IP_ADDRESS+"/easyorder/client/add";
+    private static final String USER_LOGIN_URL = "http://"+IP_ADDRESS+"/easyorder/rest/connexion";
+    private static final String GET_LISTE_FOURNISSEURS_URL = "http://"+IP_ADDRESS+"/easyorder/fournisseur/all";
+    private static final String GET_PRODUITS = "http://"+IP_ADDRESS+"/easyorder/produit/findAll";
 //    private static final String CLIENT_REGISTRATION_URL = "http://192.168.2.76/easyorder/client/add";
 
     private QueryUtils (){
@@ -60,6 +70,56 @@ public class QueryUtils {
         return jsonResponse;
     }
 
+    public static List<Fournisseur> fetchFournisseursList () {
+        URL url = createUrl( GET_LISTE_FOURNISSEURS_URL );
+        String jsonResponse  = makeHttpRequest(url, "GET", null);
+        return extractFournisseurs( jsonResponse );
+    }
+
+    public static List<Produit> getProduits (Map<String, String> params) {
+        URL url = createUrl( GET_PRODUITS );
+        String jsonResponse = makeHttpRequest(url, "POST", params);
+        return extractProduits( jsonResponse );
+    }
+
+    private static List<Produit> extractProduits ( String jsonString ) {
+        List<Produit> produits = new ArrayList<>();
+        try{
+            JSONObject rootObject = new JSONObject(jsonString);
+            boolean success = rootObject.getBoolean("success");
+
+            if (success) {
+                JSONArray produitsArray = rootObject.getJSONArray("data");
+                for(int i = 0; i < produitsArray.length(); i++) {
+                    JSONObject produitObj = produitsArray.getJSONObject(i);
+
+                    Produit produit = new Produit();
+                    produit.setDescription(produitObj.getString("description"));
+                    produit.setNomFichier(produitObj.getString("nom_fichier"));
+                    produit.setPrix(produitObj.getInt("prix"));
+                    produit.setTitre(produitObj.getString("titre"));
+                    produit.setId(produitObj.getInt("id_produit"));
+
+                    Categorie categorie = new Categorie();
+                    categorie.setId(produitObj.getInt("id_categorie"));
+                    produit.setCategorie( categorie );
+
+                    Fournisseur fournisseur = new Fournisseur();
+                    fournisseur.setIdUser(produitObj.getInt("id_fournisseur"));
+                    produit.setFournisseur(fournisseur);
+
+                    produits.add(produit);
+                }
+            } else {
+                String message = rootObject.getString("message");
+                Log.e(LOG_TAG, message);
+            }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Error parsing JSON Object", e);
+        }
+        return produits;
+    }
+
     /**
      *
      * @param url
@@ -81,10 +141,11 @@ public class QueryUtils {
             urlConnection.setConnectTimeout(10000);
             urlConnection.setReadTimeout(15000);
             urlConnection.setRequestMethod(verb);
-            urlConnection.setDoInput(true);
-            urlConnection.setDoOutput(true);
 
             if (params != null) {
+                urlConnection.setDoInput(true);
+                urlConnection.setDoOutput(true);
+
                 Uri.Builder builder = new Uri.Builder();
 
                 Iterator it = params.entrySet().iterator();
@@ -144,4 +205,35 @@ public class QueryUtils {
         return  jsonResponse.toString();
     }
 
+    private static List<Fournisseur> extractFournisseurs( String jsonString ) {
+        List<Fournisseur> fournisseurs = null;
+        try{
+            JSONObject root = new JSONObject( jsonString );
+            boolean success = root.getBoolean("success");
+            if ( success ) {
+                JSONArray jsonArray = root.getJSONArray("data");
+                fournisseurs = new ArrayList<>();
+
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    Fournisseur fournisseur = new Fournisseur();
+
+                    fournisseur.setIdUser( jsonObject.getInt("id_user") );
+                    fournisseur.setEmail( jsonObject.getString("email") );
+                    fournisseur.setTelephone( jsonObject.getString("telephone") );
+                    fournisseur.setNomSociete( jsonObject.getString("nom_societe") );
+                    fournisseur.setNomImageProfil( jsonObject.getString("nom_image_profil") );
+
+                    fournisseurs.add( fournisseur );
+                }
+            } else {
+                String message = root.getString("message");
+                Log.e(LOG_TAG, message);
+            }
+        } catch (JSONException e){
+            Log.e(LOG_TAG, "Error parsing JSON response", e);
+        }
+        return fournisseurs;
+    }
 }

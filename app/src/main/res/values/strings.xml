@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">DarAndroidProject</string>
     <string name="jwt">com.esmt.darandroidproject.LOGIN_JWT</string>
+    <string name="fournisseur_id">com.esmt.darandroidproject.FOURNISSEUR_ID</string>
     <string name="shared_preferences_name">com.esmt.darandroidproject.SHARED_PREFERENCES</string>
+    <string name="title_activity_navigation">NavigationActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 </resources>

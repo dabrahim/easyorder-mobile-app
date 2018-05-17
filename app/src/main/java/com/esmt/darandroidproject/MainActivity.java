@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         
         if (getToken() != null) {
-            Intent i = new Intent(MainActivity.this, HomeClientActivity.class);
+            Intent i = new Intent(MainActivity.this, NavigationActivity.class);
             startActivity(i);
             finish();
         }

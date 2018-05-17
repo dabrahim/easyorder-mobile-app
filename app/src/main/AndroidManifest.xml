@@ -21,7 +21,12 @@
         <activity android:name=".ConnectionActivity" />
         <activity android:name=".InscriptionActivity" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".HomeClientActivity"></activity>
+        <activity android:name=".HomeClientActivity" />
+        <activity
+            android:name=".NavigationActivity"
+            android:label="@string/title_activity_navigation"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".FournisseursListeActivity"></activity>
     </application>
 
 </manifest>

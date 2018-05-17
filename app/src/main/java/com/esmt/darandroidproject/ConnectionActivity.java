@@ -96,7 +96,8 @@ public class ConnectionActivity extends AppCompatActivity {
                 editor.putString(getString(R.string.jwt), jwt);
                 editor.commit();
 
-                Intent i = new Intent(ConnectionActivity.this, HomeClientActivity.class);
+                //Intent i = new Intent(ConnectionActivity.this, HomeClientActivity.class);
+                Intent i = new Intent(ConnectionActivity.this, NavigationActivity.class);
                 startActivity(i);
                 finish();
 
