@@ -26,7 +26,8 @@
             android:name=".NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".FournisseursListeActivity"></activity>
+        <activity android:name=".FournisseursListeActivity" />
+        <activity android:name=".ProductsListActivity"></activity>
     </application>
 
 </manifest>

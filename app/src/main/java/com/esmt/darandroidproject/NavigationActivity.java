@@ -30,7 +30,6 @@ import java.util.Map;
 public class NavigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Button logoutButton, btnTest;
     private LinearLayout containerLayout;
     private ProgressDialog progressDialog;
 
@@ -58,23 +57,6 @@ public class NavigationActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-       /* /////////////
-        logoutButton = (Button) findViewById(R.id.btn_logout);
-         logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_name), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove(getString(R.string.jwt));
-                editor.commit();
-                Toast.makeText(NavigationActivity.this, "Déconnexion réussie", Toast.LENGTH_SHORT).show();
-
-                Intent i = new Intent(NavigationActivity.this, MainActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });//////////////////*/
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Chargement en cours ...");

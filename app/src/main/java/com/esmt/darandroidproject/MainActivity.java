@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btnConnexion, btnInscription/*, btnShowToken*/;
+    private Button btnConnexion, btnInscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,15 +23,14 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        btnConnexion = (Button) findViewById(R.id.btn_connexion);
-        btnInscription = (Button) findViewById(R.id.btn_inscription);
+        btnConnexion = findViewById(R.id.btn_connexion);
+        btnInscription = findViewById(R.id.btn_inscription);
 
         btnInscription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, InscriptionActivity.class);
                 startActivity(i);
-                finish();
             }
         });
 
@@ -40,19 +39,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, ConnectionActivity.class);
                 startActivity(i);
-                finish();
             }
         });
-
-/*        btnShowToken = (Button) findViewById(R.id.btn_show_token);
-        btnShowToken.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences preferences = getSharedPreferences(getString(R.string.shared_preferences_name) ,Context.MODE_PRIVATE);
-                String token = preferences.getString( getString(R.string.jwt) , "No token");
-                Toast.makeText(MainActivity.this, token, Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
     private String getToken () {

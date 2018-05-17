@@ -32,10 +32,4 @@
         android:text="Se Connecter"
         android:id="@+id/btn_connexion"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="O"
-        android:id="@+id/btn_show_token"/>
-
 </LinearLayout>

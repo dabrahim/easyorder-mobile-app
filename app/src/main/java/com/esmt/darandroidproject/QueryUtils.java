@@ -27,7 +27,7 @@ import java.util.Map;
 public class QueryUtils {
 
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
-    public static final String  IP_ADDRESS =  "192.168.43.246";
+    public static final String  IP_ADDRESS =  "192.168.2.76";
 
     private static final String CLIENT_REGISTRATION_URL = "http://"+IP_ADDRESS+"/easyorder/client/add";
     private static final String USER_LOGIN_URL = "http://"+IP_ADDRESS+"/easyorder/rest/connexion";

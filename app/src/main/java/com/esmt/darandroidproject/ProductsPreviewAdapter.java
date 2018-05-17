@@ -53,8 +53,8 @@ public class ProductsPreviewAdapter extends RecyclerView.Adapter<ProductsPreview
         // - replace the contents of the view with that element
         //holder.mTextView.setText(mDataset[position]);
         holder.textView.setText(currentProduct.getTitre());
-        new DownloadImageTask(holder.imageProduit)
-                .execute("http://"+ QueryUtils.IP_ADDRESS+"/easyorder/uploads/"+currentProduct.getNomFichier());
+        //new DownloadImageTask(holder.imageProduit)
+               // .execute("http://"+ QueryUtils.IP_ADDRESS+"/easyorder/uploads/"+currentProduct.getNomFichier());
     }
 
     // Return the size of your dataset (invoked by the layout manager)

@@ -22,7 +22,7 @@ import java.util.Map;
 public class ConnectionActivity extends AppCompatActivity {
     private EditText txtEmail, txtPassword;
     private String email, password;
-    private Button btnConnection /*, btnShowToken */;
+    private Button btnConnection;
     private ProgressDialog progressDialog;
 
     private static final String LOG_TAG = ConnectionActivity.class.getSimpleName();
@@ -53,16 +53,6 @@ public class ConnectionActivity extends AppCompatActivity {
                 task.execute( params );
             }
         });
-
-/*        btnShowToken = (Button) findViewById(R.id.btn_show_token);
-        btnShowToken.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences preferences = getSharedPreferences(getString(R.string.shared_preferences_name) ,Context.MODE_PRIVATE);
-                String token = preferences.getString( getString(R.string.jwt) , "No token");
-                Toast.makeText(ConnectionActivity.this, token, Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
     private class ConnexionTask extends AsyncTask<Map<String, String>, Void, String> {

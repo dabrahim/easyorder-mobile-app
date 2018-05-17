@@ -1,6 +1,7 @@
 package com.esmt.darandroidproject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
 
     private static final String LOG_TAG = CategoriesAdapater.class.getSimpleName();
 
+    private List<Categorie> mCategories;
+
     /**
      * This is our own custom constructor (it doesn't mirror a superclass constructor).
      * The context is used to inflate the layout file, and the list is the data we want
@@ -35,6 +38,7 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
         // Because this is a custom adapter for two TextViews and an ImageView, the adapter is not
         // going to use this second argument, so it can be any value. Here, we used 0.
         super(context, 0, categories);
+        mCategories = categories;
     }
 
     /**
@@ -63,7 +67,9 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
         btnVoirPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Catégorie : " + currentCategorie.getId(), Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getContext(), ProductsListActivity.class);
+                i.putExtra("idCategorie", currentCategorie.getId());
+                getContext().startActivity(i);
             }
         });
 
