@@ -1,6 +1,10 @@
 package com.esmt.darandroidproject;
 
 import android.app.ProgressDialog;
+import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Room;
+import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,13 +36,24 @@ public class NavigationActivity extends AppCompatActivity
 
     private LinearLayout containerLayout;
     private ProgressDialog progressDialog;
+    private static AppDatabase dbInstance;
+    private Utilisateur utilisateur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Chargement en cours ...");
+        progressDialog.show();
+
+        AppDatabase db = NavigationActivity.getDbInstance(getApplicationContext());
+        utilisateur = db.userDao().findLastUser();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -58,17 +73,47 @@ public class NavigationActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Chargement en cours ...");
-
         containerLayout = findViewById(R.id.container_layout);
 
         int idFournisseur = getIdFournisseur();
         if (idFournisseur == 0) {
             displayDefaultContent();
         } else {
-            displayProductsList(idFournisseur);
+            displayProductsList( idFournisseur );
         }
+
+/*
+        ArrayList<Etudiant> etudiants = new ArrayList<>();
+        etudiants.add(new Etudiant("Ndiaye", "Ibrahima"));
+        etudiants.add(new Etudiant("Diallo", "Maimouna"));
+        etudiants.add(new Etudiant("Ndiaye", "Diadji"));
+        etudiants.add(new Etudiant("Daye", "Fatou"));
+*/
+        /*
+        Etudiant etudiants [] = {new Etudiant("Ndiaye", "Ibrahima"),
+                new Etudiant("Diallo", "Maimouna"),
+                new Etudiant("Ndiaye", "Diadji"),
+                new Etudiant("Gaye", "Fatou")};
+
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "easyorder")
+                .addMigrations(new Migration(1, 2) {
+                    @Override
+                    public void migrate(SupportSQLiteDatabase database) {}
+                })
+                .allowMainThreadQueries()
+                .build();
+        db.esmtDao().createEtudiant(etudiants);
+
+
+        List<Etudiant> etudiantList = db.esmtDao().getAllEtudiant();
+        String rslt = "";
+        for(Etudiant etudiant : etudiantList) {
+            rslt += etudiant.toString() + " ";
+        }
+
+        Toast.makeText(this, rslt, Toast.LENGTH_LONG).show();
+        */
+        progressDialog.hide();
     }
 
     private int getIdFournisseur () {
@@ -94,9 +139,39 @@ public class NavigationActivity extends AppCompatActivity
     private void displayProductsList (int idFournisseur) {
         Map<String, String> params = new HashMap<>();
         params.put("idFournisseur", String.valueOf(idFournisseur));
+        params.put("idUser", String.valueOf(utilisateur.getIdUser()));
 
-        GetProductsTask task = new GetProductsTask();
-        task.execute( params );
+        AppDatabase db = getDbInstance(getApplicationContext());
+        List<Produit> produits = db.produitDao().getAllProducts();
+
+        if (produits.size() == 0) {
+            GetProductsTask task = new GetProductsTask();
+            task.execute( params );
+            //Toast.makeText(this, "Data was fetched from the server", Toast.LENGTH_SHORT).show();
+        } else {
+            GetNewProductsTask task = new GetNewProductsTask();
+            task.execute( params );
+            updateUI( produits );
+            //Toast.makeText(this, "Data was fetched locally", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class GetNewProductsTask extends AsyncTask<Map<String, String>, Void, List<Produit>> {
+        @Override
+        protected void onPreExecute() {
+            //
+        }
+
+        @Override
+        protected List<Produit> doInBackground(Map<String, String>... params) {
+            return QueryUtils.getNouveauxProduits(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<Produit> produits) {
+            AppDatabase db = NavigationActivity.getDbInstance(getApplicationContext());
+            db.produitDao().createProducts(produits);
+        }
     }
 
     private class GetProductsTask extends AsyncTask<Map<String, String>, Void, List<Produit>> {
@@ -114,9 +189,28 @@ public class NavigationActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(List<Produit> produits) {
             progressDialog.hide();
-            Toast.makeText(NavigationActivity.this, "Done: " + produits.toString(), Toast.LENGTH_SHORT).show();
+            saveProductsLocally( produits );
             updateUI( produits );
         }
+    }
+
+    private void saveProductsLocally (List<Produit> products) {
+        AppDatabase db = getDbInstance(getApplicationContext());
+        db.produitDao().createProducts(products);
+    }
+
+    public static AppDatabase getDbInstance (Context context) {
+        if (dbInstance == null) {
+            dbInstance = Room.databaseBuilder(context, AppDatabase.class, "easyorder3")
+                    /* .addMigrations(new Migration(1, 2) {
+                        @Override
+                        public void migrate(SupportSQLiteDatabase database) {
+                        }
+                    })*/
+                    .allowMainThreadQueries()
+                    .build();
+        }
+        return dbInstance;
     }
 
     private void updateUI(List<Produit> produits) {
@@ -135,7 +229,6 @@ public class NavigationActivity extends AppCompatActivity
                 categories.get( idCategories.indexOf(idCategorie) ).addProduit(produit);
             }
         }
-
         ListView listViewProducts = (ListView) findViewById(R.id.listview_produits);
         CategoriesAdapater adapater = new CategoriesAdapater(this, categories);
         listViewProducts.setAdapter(adapater);
@@ -195,6 +288,9 @@ public class NavigationActivity extends AppCompatActivity
             editor.remove(getString(R.string.jwt));
             editor.remove(getString(R.string.fournisseur_id));
             editor.commit();
+
+            AppDatabase db = getDbInstance(getApplicationContext());
+            db.produitDao().deleteAllProducts();
             
             Toast.makeText(NavigationActivity.this, "Déconnexion réussie", Toast.LENGTH_SHORT).show();
 

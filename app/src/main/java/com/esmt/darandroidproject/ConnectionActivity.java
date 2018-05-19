@@ -13,10 +13,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConnectionActivity extends AppCompatActivity {
@@ -86,7 +89,31 @@ public class ConnectionActivity extends AppCompatActivity {
                 editor.putString(getString(R.string.jwt), jwt);
                 editor.commit();
 
-                //Intent i = new Intent(ConnectionActivity.this, HomeClientActivity.class);
+
+                JSONObject userJson = json.getJSONObject("user");
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setIdUser(userJson.getInt("id_user"));
+                utilisateur.setEmail(userJson.getString("email"));
+                utilisateur.setDateInscription(userJson.getString("date_inscription"));
+                utilisateur.setTelephone(userJson.getString("telephone"));
+                utilisateur.setSolde(userJson.getInt("solde"));
+
+                JSONArray categoriesJson = json.getJSONArray("categories");
+                List<Categorie> categories = new ArrayList<>();
+                for(int i = 0; i < categoriesJson.length(); i++){
+                    JSONObject categorieJson = categoriesJson.getJSONObject(i);
+                    Categorie categorie = new Categorie();
+                    categorie.setId(categorieJson.getInt("id_categorie"));
+                    categorie.setNom(categorieJson.getString("nom_categorie"));
+                    categories.add(categorie);
+                }
+
+                AppDatabase db = NavigationActivity.getDbInstance(getApplicationContext());
+
+                db.categorieDao().deleteAll();
+                db.categorieDao().create(categories);
+                db.userDao().create(utilisateur);
+
                 Intent i = new Intent(ConnectionActivity.this, NavigationActivity.class);
                 startActivity(i);
                 finish();

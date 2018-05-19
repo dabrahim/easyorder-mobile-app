@@ -61,7 +61,8 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
 
 
         // Get the {@link Categorie} object located at this position in the list
-        final Categorie currentCategorie = getItem(position);
+       final Categorie currentCategorie = getItem(position);
+
 
         Button btnVoirPlus = listItemView.findViewById(R.id.btn_voir_plus);
         btnVoirPlus.setOnClickListener(new View.OnClickListener() {
@@ -73,9 +74,13 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
             }
         });
 
+        AppDatabase db = NavigationActivity.getDbInstance(getContext());
+        final Categorie cat = db.categorieDao().findById(currentCategorie.getId());
+
         //Nom de la catégorie
         TextView textView = listItemView.findViewById(R.id.nom_categorie_textView);
-        textView.setText(currentCategorie.getNom());
+        textView.setText(cat.getNom());
+
 
         //Liste des produits
         List<Produit> produits = currentCategorie.getProduits();

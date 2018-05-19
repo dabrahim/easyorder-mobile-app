@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class ProductsListActivity extends AppCompatActivity {
 
     @Override
@@ -14,6 +16,9 @@ public class ProductsListActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int idCategorie = intent.getIntExtra("idCategorie", 0);
-        Toast.makeText(this, "Id received: " + idCategorie, Toast.LENGTH_SHORT).show();
+
+        AppDatabase db = NavigationActivity.getDbInstance(getApplicationContext());
+        List<Produit> produits = db.produitDao().getAllProducts();
+        Toast.makeText(this, "Id received: " + produits.toString(), Toast.LENGTH_SHORT).show();
     }
 }

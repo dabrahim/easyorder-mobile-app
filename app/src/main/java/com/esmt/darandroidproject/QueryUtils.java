@@ -33,6 +33,7 @@ public class QueryUtils {
     private static final String USER_LOGIN_URL = "http://"+IP_ADDRESS+"/easyorder/rest/connexion";
     private static final String GET_LISTE_FOURNISSEURS_URL = "http://"+IP_ADDRESS+"/easyorder/fournisseur/all";
     private static final String GET_PRODUITS = "http://"+IP_ADDRESS+"/easyorder/produit/findAll";
+    private static final String GET_NOUVEAUX_PRODUITS = "http://"+IP_ADDRESS+"/easyorder/produit/getUpdates";
 //    private static final String CLIENT_REGISTRATION_URL = "http://192.168.2.76/easyorder/client/add";
 
     private QueryUtils (){
@@ -74,6 +75,12 @@ public class QueryUtils {
         URL url = createUrl( GET_LISTE_FOURNISSEURS_URL );
         String jsonResponse  = makeHttpRequest(url, "GET", null);
         return extractFournisseurs( jsonResponse );
+    }
+
+    public static List<Produit> getNouveauxProduits(Map<String, String> params){
+        URL url = createUrl(GET_NOUVEAUX_PRODUITS);
+        String jsonResponse = makeHttpRequest(url, "POST", params);
+        return extractProduits(jsonResponse);
     }
 
     public static List<Produit> getProduits (Map<String, String> params) {

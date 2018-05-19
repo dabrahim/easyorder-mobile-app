@@ -14,23 +14,6 @@
         android:id="@+id/container_layout"
         android:orientation="vertical">
 
-        <!--<Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Deconnexion"
-            android:id="@+id/btn_logout"/>-->
-
-        <!--<Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_test"
-            android:text="Test"/>-->
-
-        <!--<TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/json_response"/>-->
-
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

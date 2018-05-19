@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class ProductsPreviewAdapter extends RecyclerView.Adapter<ProductsPreviewAdapter.ViewHolder> {
@@ -53,6 +55,9 @@ public class ProductsPreviewAdapter extends RecyclerView.Adapter<ProductsPreview
         // - replace the contents of the view with that element
         //holder.mTextView.setText(mDataset[position]);
         holder.textView.setText(currentProduct.getTitre());
+        Picasso.get()
+                .load("http://"+ QueryUtils.IP_ADDRESS+"/easyorder/uploads/"+currentProduct.getNomFichier())
+                .into(holder.imageProduit);
         //new DownloadImageTask(holder.imageProduit)
                // .execute("http://"+ QueryUtils.IP_ADDRESS+"/easyorder/uploads/"+currentProduct.getNomFichier());
     }

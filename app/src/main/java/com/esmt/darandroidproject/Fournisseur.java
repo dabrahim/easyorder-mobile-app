@@ -34,4 +34,9 @@ public class Fournisseur extends Utilisateur {
     public void setNomImageProfil(String nomImageProfil) {
         this.nomImageProfil = nomImageProfil;
     }
+
+    public Fournisseur (){}
+    public Fournisseur (int idFournisseur){
+        super.setIdUser(idFournisseur);
+    }
 }

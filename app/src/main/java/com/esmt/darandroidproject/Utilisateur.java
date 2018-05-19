@@ -1,11 +1,34 @@
 package com.esmt.darandroidproject;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Query;
+
+import java.util.List;
+@Dao
+interface UserDao {
+    @Insert
+    public void create(Utilisateur... users);
+
+    @Query("DELETE FROM utilisateurs")
+    public void deleteAll();
+
+    @Query("SELECT * FROM utilisateurs LIMIT 1")
+    public Utilisateur findLastUser();
+}
+
+@Entity(tableName = "utilisateurs")
 public class Utilisateur {
+    @ColumnInfo(name = "id_user") @PrimaryKey
     private int idUser;
     private String email;
     private String password;
+    @ColumnInfo(name = "date_inscription")
     private String dateInscription;
-    private String type;
+    private String type = "USER";
     private String telephone;
     private int solde;
 

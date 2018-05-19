@@ -1,13 +1,61 @@
 package com.esmt.darandroidproject;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Query;
+
+import java.util.List;
+
+@Dao
+interface ProduitDao {
+    @Insert
+    public void createProducts(List<Produit> produits);
+
+    @Query("SELECT * FROM produits")
+    public List<Produit> getAllProducts();
+
+    @Query("DELETE FROM produits")
+    public void deleteAllProducts();
+}
+
+@Entity(tableName = "produits")
 public class Produit {
+    @PrimaryKey @ColumnInfo(name = "id_produit")
     private int id;
     private String titre;
     private String description;
     private int prix;
+    @ColumnInfo(name = "nom_fichier")
     private String nomFichier;
+    @Ignore
     private Fournisseur fournisseur;
+    @Ignore
     private Categorie categorie;
+    private int id_fournisseur;
+    private  int id_categorie;
+
+    public int getId_categorie() {
+        return id_categorie;
+    }
+
+    public void setId_categorie(int id_categorie) {
+        this.id_categorie = id_categorie;
+        this.categorie = new Categorie(id_categorie);
+    }
+
+    public void setId_fournisseur(int id_fournisseur) {
+        this.id_fournisseur = id_fournisseur;
+        this.fournisseur = new Fournisseur(id_fournisseur);
+    }
+
+    public int getId_fournisseur() {
+        return id_fournisseur;
+    }
 
     public int getId() {
         return id;
@@ -55,6 +103,7 @@ public class Produit {
 
     public void setFournisseur(Fournisseur fournisseur) {
         this.fournisseur = fournisseur;
+        this.id_fournisseur = fournisseur.getIdUser();
     }
 
     public Categorie getCategorie() {
@@ -63,5 +112,6 @@ public class Produit {
 
     public void setCategorie(Categorie categorie) {
         this.categorie = categorie;
+        this.id_categorie = categorie.getId();
     }
 }
