@@ -27,13 +27,15 @@ import java.util.Map;
 public class QueryUtils {
 
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
-    public static final String  IP_ADDRESS =  "192.168.2.76";
+    public static final String  IP_ADDRESS =  "192.168.43.246";
 
     private static final String CLIENT_REGISTRATION_URL = "http://"+IP_ADDRESS+"/easyorder/client/add";
     private static final String USER_LOGIN_URL = "http://"+IP_ADDRESS+"/easyorder/rest/connexion";
     private static final String GET_LISTE_FOURNISSEURS_URL = "http://"+IP_ADDRESS+"/easyorder/fournisseur/all";
     private static final String GET_PRODUITS = "http://"+IP_ADDRESS+"/easyorder/produit/findAll";
     private static final String GET_NOUVEAUX_PRODUITS = "http://"+IP_ADDRESS+"/easyorder/produit/getUpdates";
+    private static final String SEND_ORDER_URL = "http://"+IP_ADDRESS+"/easyorder/rest/publierCommande";
+    private static final String PAYER_COMMANDE = "http://"+IP_ADDRESS+":3000/notification/";
 //    private static final String CLIENT_REGISTRATION_URL = "http://192.168.2.76/easyorder/client/add";
 
     private QueryUtils (){
@@ -77,6 +79,16 @@ public class QueryUtils {
         return extractFournisseurs( jsonResponse );
     }
 
+    public static String fetchDetailsCommande(String urlStr) {
+        URL url = createUrl(urlStr);
+        return makeHttpRequest(url, "POST", null);
+    }
+
+    public static String payerCommande (int montant) {
+        URL url = createUrl( PAYER_COMMANDE + montant );
+        return makeHttpRequest(url, "POST", null);
+    }
+
     public static List<Produit> getNouveauxProduits(Map<String, String> params){
         URL url = createUrl(GET_NOUVEAUX_PRODUITS);
         String jsonResponse = makeHttpRequest(url, "POST", params);
@@ -87,6 +99,11 @@ public class QueryUtils {
         URL url = createUrl( GET_PRODUITS );
         String jsonResponse = makeHttpRequest(url, "POST", params);
         return extractProduits( jsonResponse );
+    }
+
+    public static String sendOrder(Map<String, String> params) {
+        URL url = createUrl( SEND_ORDER_URL );
+        return makeHttpRequest(url, "POST", params);
     }
 
     private static List<Produit> extractProduits ( String jsonString ) {

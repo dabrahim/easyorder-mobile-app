@@ -21,6 +21,17 @@ interface ProduitDao {
 
     @Query("DELETE FROM produits")
     public void deleteAllProducts();
+
+    @Query("SELECT * FROM produits WHERE id_produit = :idProduit")
+    public Produit findById(int idProduit);
+
+    @Query("SELECT * FROM produits WHERE id_produit IN (:idProduits)")
+    public List<Produit> findProducts(int ... idProduits);
+
+    @Query("SELECT prix FROM produits WHERE id_produit = :idProduit")
+    public int getPrixProduit(int idProduit);
+
+
 }
 
 @Entity(tableName = "produits")

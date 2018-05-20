@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -70,6 +71,10 @@ public class FournisseursListeActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt(getString(R.string.fournisseur_id), fournisseur.getIdUser());
                 editor.commit();
+
+                AppDatabase db = AppDatabase.getInstance(FournisseursListeActivity.this);
+                db.produitDao().deleteAllProducts();
+                db.panierDao().deleteAll();
 
                 Intent i = new Intent(FournisseursListeActivity.this, NavigationActivity.class);
                 startActivity(i);

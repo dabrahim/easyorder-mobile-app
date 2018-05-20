@@ -83,7 +83,7 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
 
 
         //Liste des produits
-        List<Produit> produits = currentCategorie.getProduits();
+        final List<Produit> produits = currentCategorie.getProduits();
         RecyclerView recyclerView = listItemView.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
@@ -92,6 +92,17 @@ public class CategoriesAdapater extends ArrayAdapter<Categorie> {
 
         ProductsPreviewAdapter adapter = new ProductsPreviewAdapter(produits);
         recyclerView.setAdapter(adapter);
+
+        ItemClickSupport.addTo(recyclerView)
+            .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                    int idProduit = produits.get(position).getId();
+                    Intent i = new Intent(getContext(), ShowProductActivity.class);
+                    i.putExtra("idProduit", idProduit);
+                    getContext().startActivity(i);
+                }
+            });
 
         // Return the whole list item layout (containing 2 TextViews and an ImageView)
         // so that it can be shown in the ListView

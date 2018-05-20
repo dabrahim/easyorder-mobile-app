@@ -1,5 +1,6 @@
 package com.esmt.darandroidproject;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Query;
@@ -8,10 +9,13 @@ import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +28,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -38,6 +43,10 @@ public class NavigationActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private static AppDatabase dbInstance;
     private Utilisateur utilisateur;
+    private  List<Produit> produits;
+
+    private static final int ZXING_CAMERA_PERMISSION = 1;
+    private Class<?> mClss;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +68,10 @@ public class NavigationActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                showCart();
+
             }
         });
 
@@ -82,38 +93,12 @@ public class NavigationActivity extends AppCompatActivity
             displayProductsList( idFournisseur );
         }
 
-/*
-        ArrayList<Etudiant> etudiants = new ArrayList<>();
-        etudiants.add(new Etudiant("Ndiaye", "Ibrahima"));
-        etudiants.add(new Etudiant("Diallo", "Maimouna"));
-        etudiants.add(new Etudiant("Ndiaye", "Diadji"));
-        etudiants.add(new Etudiant("Daye", "Fatou"));
-*/
-        /*
-        Etudiant etudiants [] = {new Etudiant("Ndiaye", "Ibrahima"),
-                new Etudiant("Diallo", "Maimouna"),
-                new Etudiant("Ndiaye", "Diadji"),
-                new Etudiant("Gaye", "Fatou")};
-
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "easyorder")
-                .addMigrations(new Migration(1, 2) {
-                    @Override
-                    public void migrate(SupportSQLiteDatabase database) {}
-                })
-                .allowMainThreadQueries()
-                .build();
-        db.esmtDao().createEtudiant(etudiants);
-
-
-        List<Etudiant> etudiantList = db.esmtDao().getAllEtudiant();
-        String rslt = "";
-        for(Etudiant etudiant : etudiantList) {
-            rslt += etudiant.toString() + " ";
-        }
-
-        Toast.makeText(this, rslt, Toast.LENGTH_LONG).show();
-        */
         progressDialog.hide();
+
+        /*
+        TextView txtFullName = findViewById(R.id.textView);
+        txtFullName.setText(utilisateur.getEmail());
+        */
     }
 
     private int getIdFournisseur () {
@@ -141,8 +126,9 @@ public class NavigationActivity extends AppCompatActivity
         params.put("idFournisseur", String.valueOf(idFournisseur));
         params.put("idUser", String.valueOf(utilisateur.getIdUser()));
 
-        AppDatabase db = getDbInstance(getApplicationContext());
-        List<Produit> produits = db.produitDao().getAllProducts();
+//        AppDatabase db = getDbInstance(getApplicationContext());
+//        produits = db.produitDao().getAllProducts();
+        produits = DbQueryUtils.getAllProducts(getApplicationContext());
 
         if (produits.size() == 0) {
             GetProductsTask task = new GetProductsTask();
@@ -151,7 +137,6 @@ public class NavigationActivity extends AppCompatActivity
         } else {
             GetNewProductsTask task = new GetNewProductsTask();
             task.execute( params );
-            updateUI( produits );
             //Toast.makeText(this, "Data was fetched locally", Toast.LENGTH_SHORT).show();
         }
     }
@@ -159,7 +144,6 @@ public class NavigationActivity extends AppCompatActivity
     private class GetNewProductsTask extends AsyncTask<Map<String, String>, Void, List<Produit>> {
         @Override
         protected void onPreExecute() {
-            //
         }
 
         @Override
@@ -171,6 +155,8 @@ public class NavigationActivity extends AppCompatActivity
         protected void onPostExecute(List<Produit> produits) {
             AppDatabase db = NavigationActivity.getDbInstance(getApplicationContext());
             db.produitDao().createProducts(produits);
+            NavigationActivity.this.produits.addAll(produits);
+            updateUI(NavigationActivity.this.produits);
         }
     }
 
@@ -200,17 +186,7 @@ public class NavigationActivity extends AppCompatActivity
     }
 
     public static AppDatabase getDbInstance (Context context) {
-        if (dbInstance == null) {
-            dbInstance = Room.databaseBuilder(context, AppDatabase.class, "easyorder3")
-                    /* .addMigrations(new Migration(1, 2) {
-                        @Override
-                        public void migrate(SupportSQLiteDatabase database) {
-                        }
-                    })*/
-                    .allowMainThreadQueries()
-                    .build();
-        }
-        return dbInstance;
+        return AppDatabase.getInstance(context);
     }
 
     private void updateUI(List<Produit> produits) {
@@ -260,10 +236,16 @@ public class NavigationActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+           Intent i = new Intent(this, FournisseursListeActivity.class);
+           startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showCart () {
+        Intent i = new Intent(this, PanierActivity.class);
+        startActivity(i);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -271,17 +253,12 @@ public class NavigationActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_cart) {
+            launchActivity(SimpleScannerActivity.class);
+            
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_name), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -291,6 +268,8 @@ public class NavigationActivity extends AppCompatActivity
 
             AppDatabase db = getDbInstance(getApplicationContext());
             db.produitDao().deleteAllProducts();
+            db.panierDao().deleteAll();
+            db.categorieDao().deleteAll();
             
             Toast.makeText(NavigationActivity.this, "Déconnexion réussie", Toast.LENGTH_SHORT).show();
 
@@ -299,8 +278,36 @@ public class NavigationActivity extends AppCompatActivity
             finish();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void launchActivity(Class<?> clss) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            mClss = clss;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA}, ZXING_CAMERA_PERMISSION);
+        } else {
+            Intent intent = new Intent(this, clss);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ZXING_CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(mClss != null) {
+                        Intent intent = new Intent(this, mClss);
+                        startActivity(intent);
+                    }
+                } else {
+                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
+                }
+                return;
+        }
     }
 }

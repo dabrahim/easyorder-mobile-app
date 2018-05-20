@@ -3,6 +3,7 @@
     package="com.esmt.darandroidproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,13 @@
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".FournisseursListeActivity" />
-        <activity android:name=".ProductsListActivity"></activity>
+        <activity android:name=".ProductsListActivity" />
+        <activity
+            android:name=".ShowProductActivity"
+            android:label="@string/title_activity_show_product"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".PanierActivity" />
+        <activity android:name=".SimpleScannerActivity"></activity>
     </application>
 
 </manifest>
